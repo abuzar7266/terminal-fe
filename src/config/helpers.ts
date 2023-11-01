@@ -9,6 +9,48 @@ export const console_about = (args: any, print: any) => {
   );
 };
 
+async function selectFile(print: any): Promise<File | null> {
+  return new Promise<File | null>((resolve) => {
+    const inputElement = document.createElement("input");
+    inputElement.type = "file";
+    inputElement.style.display = "none";
+    inputElement.accept = ".csv";
+
+    const handleChange = (event: Event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        resolve(files[0]);
+        print(`${files[0].name} has been uploaded successfully`);
+      } else {
+        resolve(null);
+      }
+      // Remove the input element from the DOM
+      document.body.removeChild(inputElement);
+    };
+
+    inputElement.addEventListener("change", handleChange);
+
+    // Add the input element to the DOM and trigger a click event to open the file selection dialog
+    document.body.appendChild(inputElement);
+    inputElement.click();
+
+    // Use a loop to wait for the change event
+    const checkForFileSelection = () => {
+      if (inputElement.parentNode) {
+        setTimeout(checkForFileSelection, 100);
+      } else {
+        inputElement.removeEventListener("change", handleChange);
+        resolve(null);
+      }
+    };
+
+    checkForFileSelection();
+  });
+}
+
+export const upload = (args: any, print: any) => {
+  const selectFileRead = selectFile(print);
+};
 export const fetchPrice = async (symbol: string) => {
   const response = await fetch(
     `https://api.binance.com/api/v3/avgPrice?symbol=${symbol}`
@@ -63,4 +105,5 @@ export const TERMINAL_COMMANDS = {
     },
   },
   "fetch-price": { method: console_fetchPrice },
+  upload: { method: upload },
 };
