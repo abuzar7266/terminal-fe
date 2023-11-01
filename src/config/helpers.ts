@@ -9,32 +9,44 @@ export const console_about = (args: any, print: any) => {
   );
 };
 
-async function selectFile(print: any): Promise<File | null> {
+async function selectAndUpload(print: any): Promise<File | null> {
   return new Promise<File | null>((resolve) => {
     const inputElement = document.createElement("input");
     inputElement.type = "file";
     inputElement.style.display = "none";
     inputElement.accept = ".csv";
 
-    const handleChange = (event: Event) => {
+    const handleChange = async (event: Event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
-        resolve(files[0]);
-        print(`${files[0].name} has been uploaded successfully`);
+        const formData = new FormData(); // Create a FormData object
+
+        if (files[0]) {
+            formData.append('file', files[0]); // Append the file to the FormData object
+        }
+        try{
+          const response = await fetch('http://127.0.0.1:8080/cli/upload', { method: 'POST', body: formData});
+          if(response.status===200){
+            let {msg} = await response.json();
+            print(msg);
+          }
+          else
+            print(`Error: failed to upload the selected file`);
+          resolve(files[0]);
+        }catch(err){
+          print(`Error: failed to connect with server`);
+        }
       } else {
         resolve(null);
       }
-      // Remove the input element from the DOM
       document.body.removeChild(inputElement);
     };
 
     inputElement.addEventListener("change", handleChange);
 
-    // Add the input element to the DOM and trigger a click event to open the file selection dialog
     document.body.appendChild(inputElement);
     inputElement.click();
 
-    // Use a loop to wait for the change event
     const checkForFileSelection = () => {
       if (inputElement.parentNode) {
         setTimeout(checkForFileSelection, 100);
@@ -48,8 +60,8 @@ async function selectFile(print: any): Promise<File | null> {
   });
 }
 
-export const upload = (args: any, print: any) => {
-  const selectFileRead = selectFile(print);
+export const command_upload = (args: any, print: any) => {
+  selectAndUpload(print);
 };
 export const fetchPrice = async (symbol: string) => {
   const response = await fetch(
@@ -105,5 +117,5 @@ export const TERMINAL_COMMANDS = {
     },
   },
   "fetch-price": { method: console_fetchPrice },
-  upload: { method: upload },
+  upload: { method: command_upload },
 };
