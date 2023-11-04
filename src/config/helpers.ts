@@ -8,7 +8,6 @@ export const console_about = (args: any, print: any) => {
     "This is a front-end CLI created as a part of the Full Stack Hiring test. It simulates various command-line functionalities."
   );
 };
-
 async function selectAndUpload(print: any): Promise<File | null> {
   return new Promise<File | null>((resolve) => {
     const inputElement = document.createElement("input");
@@ -116,6 +115,5 @@ export const TERMINAL_COMMANDS = {
       );
     },
   },
-  "fetch-price": { method: console_fetchPrice },
   upload: { method: command_upload },
 };
