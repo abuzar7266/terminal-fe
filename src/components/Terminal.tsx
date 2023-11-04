@@ -1,6 +1,6 @@
-import { ICommandLine } from "@/config/interfaces";
-import React, { useState } from "react";
+import React from "react";
 import Terminal from "terminal-in-react";
+import { ICommandLine } from "@/config/interfaces";
 
 export const CommandLine: React.FC<ICommandLine> = ({ commands, msg }) => {
   return (
