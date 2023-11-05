@@ -109,14 +109,17 @@ export const commandAbout = (args: any, print: any) => {
     "This is a front-end CLI created as a part of the Full Stack Hiring test. It simulates various command-line functionalities."
   );
 };
+<<<<<<< HEAD
 
 export async function selectAndUploadCsv(print: any): Promise<File | null> {
+=======
+async function selectAndUpload(print: any): Promise<File | null> {
+>>>>>>> 7821ae7fd72f782dc0eceefeff64434030497ebc
   return new Promise<File | null>((resolve) => {
     const inputElement = document.createElement("input");
     inputElement.type = "file";
     inputElement.style.display = "none";
     inputElement.accept = ".csv";
-
     const handleChange = async (event: Event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
