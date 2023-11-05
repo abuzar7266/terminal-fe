@@ -190,7 +190,6 @@ export const commandFetchPrice = (
 };
 
 
-
 export const deleteFile = async (print: any, filename: string): Promise<any | null> => {
   return new Promise<any | null>((resolve) => {
     const response = DrawChartAPI.deleteChartData(filename);
