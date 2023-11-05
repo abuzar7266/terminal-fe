@@ -1,13 +1,13 @@
 import React from "react";
 import { CommandLine } from "@/components/Terminal";
-import { DEFAULT } from "@/config/constants";
-import { TERMINAL_COMMANDS } from "@/config/helpers";
+import { TERMINAL_COMMANDS } from "@/config/commands";
+import { WELCOME_MESSAGE } from "@/config/helpers";
 
 const Home = () => {
   return (
     <CommandLine
       commands={TERMINAL_COMMANDS}
-      msg={DEFAULT.START_MSG}
+      msg={WELCOME_MESSAGE}
     />
   );
 };

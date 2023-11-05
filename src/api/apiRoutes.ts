@@ -1,6 +1,3 @@
-// ChartData routes
-
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const routeTemplates = {
@@ -10,7 +7,6 @@ const routeTemplates = {
 
 
 function processRoutes(routeTemplate: string,params: any) {
-    // Replace placeholders with values from the `params` object
     const route = routeTemplate.replace(/<(\w+)>/g, (match, paramName) => {
       if (params.hasOwnProperty(paramName)) {
         return params[paramName];
@@ -29,6 +25,7 @@ export type ROUTES = keyof typeof routeTemplates;
   * @param {Object} [params={}]
   * @param {string}
 */
+
 export function getRoutes(routeName: ROUTES, params = {}){
     let url: string = routeTemplates[routeName];
     return processRoutes(url, params);

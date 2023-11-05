@@ -1,11 +1,11 @@
 import DrawChartAPI from '@/api/chartData';
 import { ERROR_MSG, STATUS } from './constants';
 
-export const print = (args: any, print: any) => {
+export const commandPrint = (args: any, print: any) => {
   print(`${args._.join(" ") || args.color}`);
 };
 
-function extractAndValidateColumns(strings: string[]) {
+export function extractAndValidateColumns(strings: string[]) {
   if (!Array.isArray(strings) || strings.length === 0) {
     return {
       status: STATUS.ERROR,
@@ -32,7 +32,6 @@ function extractAndValidateColumns(strings: string[]) {
       list: values
     }
   } else {
-    // Check if the last string is a single value without special symbols
     if (/[^A-Za-z0-9 ]/.test(lastString)) {
       return {
         status: STATUS.ERROR,
@@ -53,12 +52,12 @@ function extractAndValidateColumns(strings: string[]) {
 }
 
 
-function extractAndValidateCsvFiles(argsList: string[][]) {
+export function extractAndValidateCsvFiles(argsList: string[][]) {
   const validFileNames = [];
   const invalidFileNames = [];
 
   for (const input of argsList) {
-    const combinedInput = input.join(' '); // Combine the elements into a single string
+    const combinedInput = input.join(' ');
     const regex = /(["'])(.*?)\1/g;
     const fileMatches = combinedInput.match(regex);
 
@@ -69,7 +68,6 @@ function extractAndValidateCsvFiles(argsList: string[][]) {
     const fileNames = fileMatches.map(match => match.slice(1, -1));
 
     for (const fileName of fileNames) {
-      // Check if the file name has a valid extension (.csv)
       if (/^[\w\s-]+\.[a-zA-Z]{2,5}$/.test(fileName) && fileName.endsWith(".csv")) {
         validFileNames.push(fileName);
       } else {
@@ -105,14 +103,14 @@ function extractAndValidateCsvFiles(argsList: string[][]) {
 
 
 
-export const consoleAbout = (args: any, print: any) => {
+export const commandAbout = (args: any, print: any) => {
   print("CLI Version 1.0");
   print(
     "This is a front-end CLI created as a part of the Full Stack Hiring test. It simulates various command-line functionalities."
   );
 };
 
-async function selectAndUpload(print: any): Promise<File | null> {
+export async function selectAndUploadCsv(print: any): Promise<File | null> {
   return new Promise<File | null>((resolve) => {
     const inputElement = document.createElement("input");
     inputElement.type = "file";
@@ -122,10 +120,10 @@ async function selectAndUpload(print: any): Promise<File | null> {
     const handleChange = async (event: Event) => {
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
-        const formData = new FormData(); // Create a FormData object
+        const formData = new FormData(); 
 
         if (files[0]) {
-            formData.append('file', files[0]); // Append the file to the FormData object
+            formData.append('file', files[0]);
         }
         try{
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cli/upload`, { method: 'POST', body: formData});
@@ -163,16 +161,9 @@ async function selectAndUpload(print: any): Promise<File | null> {
   });
 }
 
-export const commandUpload = (args: any, print: any) => {
-  selectAndUpload(print);
-};
-export const fetchPrice = async (symbol: string) => {
-  const response = await fetch(
-    `https://api.binance.com/api/v3/avgPrice?symbol=${symbol}`
-  );
-  const data = await response.json();
-  return data.price;
-};
+export const commandUpload = (args: any, print: any) =>{
+  selectAndUploadCsv(print);
+}
 
 export const commandFetchPrice = (
   args: { _?: string[] },
@@ -187,7 +178,7 @@ export const commandFetchPrice = (
   fetch(`https://api.binance.com/api/v3/avgPrice?symbol=${symbol}`)
     .then((res) => {
       if (!res.ok) {
-        throw new Error(`Failed to fetch data. Status: ${res.status}`);
+        throw new Error(`${ERROR_MSG.FAILED_FETCH}${res.status}`);
       }
       return res.json();
     })
@@ -201,7 +192,7 @@ export const commandFetchPrice = (
 
 
 
-const deleteFile = async (print: any, filename: string): Promise<any | null> => {
+export const deleteFile = async (print: any, filename: string): Promise<any | null> => {
   return new Promise<any | null>((resolve) => {
     const response = DrawChartAPI.deleteChartData(filename);
     response.then((data)=>{
@@ -213,7 +204,7 @@ const deleteFile = async (print: any, filename: string): Promise<any | null> => 
   });
 }
 
-export const deleteDrawFile = (args: any, print: any) =>{
+export const commandDeleteDrawFile = (args: any, print: any) =>{
   const file = extractAndValidateCsvFiles([args._]);
   if(file?.status===STATUS.ERROR){
     print(file?.message)
@@ -221,7 +212,7 @@ export const deleteDrawFile = (args: any, print: any) =>{
     deleteFile(print, file && file?.fileName ? file?.fileName:'');
   }
 }
-export const drawChart = (args: any, print: any) =>{
+export const commandDrawChart = (args: any, print: any) =>{
   const file = extractAndValidateCsvFiles([args._]);
   const values = extractAndValidateColumns(args._);
   let error = false;
@@ -245,34 +236,20 @@ export const drawChart = (args: any, print: any) =>{
     }
   }
 }
-
-
-// TERMINAL COMMANDS MAPPING
-export const TERMINAL_COMMANDS = {
-  echo: { method: print },
-  print: { method: print },
-  about: { method: consoleAbout },
-  help: {
-    method: (args: any, print: any) => {
-      print("Available commands:");
-      print("- help: Show available commands");
-      print("- about: Display information about this CLI");
-      print(
-        "- fetch-price [coin]: Fetch the current price of a specified cryptocurrency"
-      );
-      print(
-        "- upload: Opens the file explorer to allow uploading csv files only."
-      );
-      print(
-        "- draw [file] [columns]: Draws the chart of the specified columns of the file present in the draw-chart directory. "
-      );
-    },
-  },
-  upload: { method: commandUpload },
-  draw: {method: drawChart},
-  delete: {method: deleteDrawFile},
-  "fetch-price": { method: commandFetchPrice }
-};
+export const commandHelp = (args: any, print: any) => {
+  print("Available commands:");
+  print("- help: Show available commands");
+  print("- about: Display information about this CLI");
+  print(
+    "- fetch-price [coin]: Fetch the current price of a specified cryptocurrency"
+  );
+  print(
+    "- upload: Opens the file explorer to allow uploading csv files only."
+  );
+  print(
+    "- draw [file] [columns]: Draws the chart of the specified columns of the file present in the draw-chart directory. "
+  );
+}
 
 export const getActionTypes = (action: string) => {
   return {
@@ -281,3 +258,28 @@ export const getActionTypes = (action: string) => {
      REJECTED: `${action}.REJECTED`,
   }
 }
+
+
+//-----------------------------
+//----WELCOME TEXT GENERATE----
+//-----------------------------
+const pyramidLevel = 10;
+const pyramidCharacter = '*';
+function generatePyramid(level: any, character: any) {
+  let pyramid = '';
+  for (let i = 1; i <= level; i++) {
+    const spaces = ' '.repeat(level - i);
+    const stars = character.repeat(2 * i - 1);
+    pyramid += spaces + stars + spaces + '\n';
+  }
+  return pyramid;
+}
+const leftHalf = generatePyramid(pyramidLevel, pyramidCharacter);
+const name = 'Abuzar';
+
+const rightHalf = `
+Name: ${name}
+Project: Antematter.io Full-Stack Challenge
+---------------------------------------------------------
+`;
+export const WELCOME_MESSAGE = leftHalf + rightHalf;

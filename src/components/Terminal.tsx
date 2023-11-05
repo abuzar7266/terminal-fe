@@ -14,10 +14,10 @@ export const CommandLine: React.FC<ICommandLine> = ({ commands, msg }) => {
       }}
     >
       <Terminal
-        color="green"
+        color="white"
         backgroundColor="black"
-        barColor="black"
-        style={{ fontWeight: "bold", fontSize: "1em" }}
+        barColor="gray"
+        style={{ fontWeight: "bold", fontSize: "0.8em", fontFamily:'monospace' }}
         commands={commands}
         msg={msg}
       />

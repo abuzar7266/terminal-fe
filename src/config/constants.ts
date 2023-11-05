@@ -1,7 +1,3 @@
-export enum DEFAULT {
-  START_MSG = "Welcome to command line terminal",
-}
-
 export enum ERROR_MSG{
   WINDOW_NETWORK = 'Network error in the new opened window',
   NETWORK_FAILED = 'Error: an error occurred in network request',
@@ -13,7 +9,8 @@ export enum ERROR_MSG{
   SPECIAL_SYMBOLS = '',
   ALPHANUMERIC_VALUES= "Invalid input: comma-separated column name values must contain only alphanumeric characters and spaces.",
   EMPTY_ARGS = 'Invalid input: please provide a non-empty array of strings.',
-  FILE_UPLOAD = 'Error: failed to upload the selected file'
+  FILE_UPLOAD = 'Error: failed to upload the selected file',
+  FAILED_FETCH = 'Failed to fetch data. Status: '
 }
 
 export enum STATUS{
