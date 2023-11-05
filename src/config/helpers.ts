@@ -217,7 +217,7 @@ export const commandDrawChart = (args: any, print: any) =>{
   if([file?.status, values?.status].includes(STATUS.ERROR)){
     print(file?.message ? file?.message : values?.message);
   }else{
-    let chartWindow = window.open(`${process.env.NEXT_PUBLIC_HOST_URL}/drawChart?filename=${file?.fileName}&columns=${values?.list?.join(',')}`)
+    let chartWindow = window.open(`/drawChart?filename=${file?.fileName}&columns=${values?.list?.join(',')}`)
     if (chartWindow) {
       chartWindow.onload = () => {
         print(`Drawing chart based on ${file?.fileName}...`);
